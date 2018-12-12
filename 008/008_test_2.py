@@ -1,24 +1,47 @@
-import shelve
-import random
+import numpy as np
 
-db = shelve.open('train_data')
-train_set_len = len(db['train_set'][0])
-examples = [example for example in db['train_set']]
-example = examples[3][0]
-desired_result = examples[3][1]
-weights = [0.1, 0.4, 0.2]
-learning_rate = random.uniform(-0.05,0.05)
+x = np.array(([2,9],[1,5],[3,6]),dtype = float)
+y = np.array(([92],[86],[89]),dtype = float)
+
+x = x/np.amax(x, axis=0)
+y = y/100
 
 
-def start(inputs=[], weights=[]):
-        print('inputs are ',inputs)
-        print('weights are ',weights)
-        print('Desired Result is ',desired_result)
-        current_result = sum([inputs[i]*weights[i] for i in range(0, len(inputs))])
-        print('current_result is ', current_result)
-        error = abs(current_result - desired_result)
-        print('Error is ',error)
-        if error > 0.1:
-            weights = [w+learning_rate for w in weights]
+class Neural_Network(object):
+        def __init__(self):
+                self.inputSize = 2
+                self.outputSize = 1
+                self.hiddenSize = 3
 
-start(example,weights)
+                self.w1 = np.random.randn(self.inputSize, self.hiddenSize)
+                self.w2 = np.random.randn(self.hiddenSize, self.outputSize)
+        def forward(self, x):
+                self.z = np.dot(x,self.w1)
+                self.z2 = self.sigmoid(self.z)
+                self.z3 = np.dot(self.z2,self.w2)
+                o = self.sigmoid(self.z3)
+                return o
+        def sigmoid(self,s):
+                return 1/(1+np.exp(-s))
+
+        def sigmoidPrime(self,s):
+                return s*(1-s)
+        def backward(self,x,y,o):
+                self.o_error = y-o
+                self.o_delta = self.o_error*self.sigmoidPrime(o)
+                self.z2_error = self.o_delta.dot(self.w2.T)
+                self.z2_delta =self.z2_error*self.sigmoidPrime(self.z2)
+                self.w1 += x.T.dot(self.z2_delta)
+                self.w2 += self.z2.T.dot(self.o_delta)
+        def train(self,x,y):
+                o = self.forward(x)
+                self.backward(x,y,o)
+
+nn = Neural_Network()
+for i in range(2):
+        print('Input:\n' + str(x))
+        print('Actual Output: \n' + str(y))
+        print('Predicted Output: \n' + str(nn.forward(x)))
+        print('Loss: \n' + str(np.mean(np.square(y - nn.forward(x)))))
+        print('\n')
+        nn.train(x,y)
