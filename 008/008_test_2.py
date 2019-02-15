@@ -1,10 +1,9 @@
 import numpy as np
 
-x = np.array(([1,1,1],[0,1,1],[1,1,0]),dtype = int)
-y = np.array(([20],[50],[100]),dtype = int)
+x = np.array(([1,1,1],[0,1,1],[1,1,0],[0,0,0]),dtype = int)
+y = np.array(([1],[0],[1],[0]),dtype = int)
 print(x)
-x = x/np.amax(x, axis=0)
-y = y/100
+#x = x/np.amax(x, axis=0)
 
 
 class Neural_Network(object):
@@ -36,13 +35,12 @@ class Neural_Network(object):
         def train(self,x,y):
                 o = self.forward(x)
                 self.backward(x,y,o)
-'''
+
 nn = Neural_Network()
-for i in range(10):
+for i in range(1):
         print('Input:\n' + str(x))
         print('Actual Output: \n' + str(y))
         print('Predicted Output: \n' + str(nn.forward(x)))
         print('Loss: \n' + str(np.mean(np.square(y - nn.forward(x)))))
         print('\n')
         nn.train(x,y)
-'''
