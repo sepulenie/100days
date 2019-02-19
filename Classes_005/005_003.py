@@ -6,6 +6,6 @@ for key in db:
 
 bob = db['bob']
 tom = db['tom']
-print(bob.name)
-print(db['tom'].lastName())
+
+print(tom)
 
