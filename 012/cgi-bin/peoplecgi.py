@@ -1,10 +1,10 @@
 import cgi, shelve, sys, os
 shelvename = 'class-shelve'
-fieldnames = ('name','age','job','pay')
+fieldnames = ('name', 'age', 'job', 'pay')
 
 form = cgi.FieldStorage()
 print('Content-type: text/html')
-sys.path.insert(0,os.getcwd())
+sys.path.insert(0, os.getcwd())
 
 
 replyhtml = """
@@ -30,6 +30,7 @@ for fieldname in fieldnames:
     rowshtml += (rowhtml % ((fieldname,) * 3))
 replyhtml = replyhtml.replace('$ROWS$', rowshtml)
 
+
 def htmlize(adict):
     new = adict.copy()
     for field in fieldnames:
@@ -37,7 +38,8 @@ def htmlize(adict):
         new[field] = cgi.escape(repr(value))
     return new
 
-def fetchRecord(db,form):
+
+def fetchRecord (db, form):
     try:
         key = form['key'].value
         record = db[key]
@@ -47,6 +49,7 @@ def fetchRecord(db,form):
         fields = dict.fromkeys()
         fields['key'] = 'Missing or invalid key!'
     return fields
+
 
 def updateRecord(db, form):
     if not 'key' in form:
@@ -58,20 +61,21 @@ def updateRecord(db, form):
             record = db[key]
         else:
             from person import Person
-            record = Person(name='?', age = '?')
+            record = Person(name='?', age='?')
 
         for field in fieldnames:
-            setattr(record,field,eval(form[field].value))
+            setattr(record, field, eval(form[field].value))
         db[key] = record
         fields = record.__dict__
         fields['key'] = key
     return fields
 
+
 db = shelve.open(shelvename)
 action = form['action'].value if 'action' in form else None
 if action == 'Fetch':
-    fields = fetchRecord(db,form)
-elif action =='Update':
+    fields = fetchRecord(db, form)
+elif action == 'Update':
     fields = updateRecord(db, form)
 else:
     fields = dict.fromkeys(fieldnames, '?')
